@@ -51,8 +51,8 @@ class CloudInfo
     environments.each do |env|
       info = CloudInfo.new(env, options)
       hosts = info.hosts
-      pp env
-      pp hosts
+      # pp env
+      # pp hosts
       all_hosts.merge!(hosts)
     end
     all_hosts
