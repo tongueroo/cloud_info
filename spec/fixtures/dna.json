@@ -1,0 +1,125 @@
+{
+  "db_slaves": [
+    "db-slave0.compute-1.internal"
+  ],
+  "aws_secret_key": "verysecretkey",
+  "admin_ssh_key": "ssh-rsa WHATEVER\/Pvw== ey-cloud-production\n",
+  "backup_interval": 24,
+  "user_ssh_key": [
+    "ssh-rsa FOO br"
+  ],
+  "utility_instances": [
+    {
+      "name": "util0",
+      "hostname": "util0.compute-1.internal"
+    },
+    {
+      "name": "util1",
+      "hostname": "util1.compute-1.internal"
+    },
+    {
+      "name": "memcached0",
+      "hostname": "memcached0.compute-1.internal"
+    }
+  ],
+  "mailserver": "smtp.engineyard.com",
+  "instance_role": "app_master",
+  "crons": [
+
+  ],
+  "removed_applications": [
+
+  ],
+  "backup_window": 0,
+  "members": [
+    "app0.compute-1.internal",
+    "app1.compute-1.internal"
+  ],
+  "applications": {
+    "bleacherreport": {
+      "auth": {
+        "active": false
+      },
+      "https_bind_port": 443,
+      "migration_command": "rake db:migrate",
+      "type": "rails",
+      "repository_name": "git@github.com:tongueroo\/cloud_info.git",
+      "http_bind_port": 80,
+      "run_deploy": false,
+      "revision": "",
+      "branch": "HEAD",
+      "run_migrations": false,
+      "deploy_action": "deploy",
+      "deploy_key": "-----BEGIN RSA PRIVATE KEY-----\nBAR==\n-----END RSA PRIVATE KEY-----\n",
+      "services": [
+        {
+          "resource": "mongrel",
+          "mongrel_base_port": 5000,
+          "mongrel_mem_limit": 150,
+          "mongrel_instance_count": 3
+        },
+        {
+          "resource": "memcached",
+          "base_port": 11211,
+          "mem_limit": 128
+        }
+      ],
+      "recipes": [
+        "memcached",
+        "monit",
+        "nginx",
+        "nginx-passenger"
+      ],
+      "vhosts": [
+        {
+          "name": "cloud-info.local",
+          "role": "env-name"
+        }
+      ]
+    }
+  },
+  "alert_email": "tongueroo@gmail.com",
+  "gems_to_install": [
+    {
+      "name": "aws-s3",
+      "version": "0.6.2"
+    },
+    {
+      "name": "httparty",
+      "version": "0.5.0"
+    }
+  ],
+  "users": [
+    {
+      "gid": "1000",
+      "username": "deploy",
+      "uid": "1000",
+      "comment": "",
+      "password": "foobar"
+    }
+  ],
+  "reporting_url": "https:\/\/cloud.engineyard.com\/reporting\/f9b54f62d474ff7b3193a46accd14014",
+  "aws_secret_id": "verysecretkey",
+  "master_app_server": {
+    "private_dns_name": "app0.compute-1.internal",
+    "public_ip": "123.457.789.123"
+  },
+  "environment": {
+    "name": "env-name",
+    "stack": "nginx_passenger",
+    "framework_env": "staging"
+  },
+  "packages_to_install": [
+    {
+      "name": "media-gfx\/imagemagick"
+    },
+    {
+      "name": "net-misc\/telnet-bsd"
+    }
+  ],
+  "db_host": "db0.compute-1.amazonaws.com",
+  "haproxy": {
+    "username": "deploy",
+    "password": "foobar"
+  }
+}
