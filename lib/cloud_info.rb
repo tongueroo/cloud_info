@@ -12,9 +12,8 @@ class CloudInfo
   end
   
   # if a cache exist it uses it instead of finding the servers
-  def hosts(use_cache = true)
+  def hosts(use_cache = false)
     # check yaml file first
-    puts "tung : #{@cache_path.inspect}"
     if use_cache and File.exist?(@cache_path)
       @hosts = (CloudInfo.read_yaml(@cache_path) || {})[env_name]
     end
@@ -31,7 +30,6 @@ class CloudInfo
       all_hosts[env_name] = @hosts
       CloudInfo.write_yaml(@cache_path, all_hosts)
     end
-    pp @hosts
     @hosts
   end
   

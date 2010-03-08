@@ -43,10 +43,18 @@ class CloudInfo
     
     def connect_to_servers
       thread = Thread.current
-      hosts = instances.collect {|i| i[:dns_name]}
+      hosts_with_blanks = instances.select{|i| i[:aws_state] == 'running'}.collect {|i| i[:dns_name]}
+      hosts = hosts_with_blanks.select{|i| i[:dns_name] != ""}
+      if hosts_with_blanks.size != hosts.size
+        puts "WARNING: some hosts do not have dns_name's yet, amazon is not yet ready"
+      end
+      
       threads = hosts.collect do |host|
         Thread.new {
+          puts "host #{host.inspect}"
           @sessions << Net::SSH.start(host, @user, {:keys => @private_key})
+          puts "host end"
+          @sessions
         }
       end
       threads.collect {|t| t.join}
@@ -55,18 +63,24 @@ class CloudInfo
     def build_server_infos
       return if @built
       execute_on_servers do |ssh|
+        puts "execute_on_servers hi #{ssh.host}"
         @servers[ssh.host] ||= {}
         dna_json = ssh.exec!("cat /etc/chef/dna.json")
         @servers[ssh.host]["dna"] = JSON.parse(dna_json)
+        puts "execute_on_servers hi2"
       end
       @built = true
     end
     
     def execute_on_servers
       connect_to_servers
+      threads = []
       sessions.each do |ssh|
-        yield(ssh)
+        threads << Thread.new {
+          yield(ssh)
+        }
       end
+      threads.collect{|t| t.join}
     end
     
     # builds up the hosts hash
@@ -100,10 +114,10 @@ class CloudInfo
           h["#{env_name}_app#{counters[:app] += 1}"] = host
         when "util"
           if node["name"] =~ /util/
-            h["#{env_name}_util#{counters[:util]}"] = host
+            h["#{env_name}_#{node["name"]}"] = host
             counters[:util] += 1
           elsif
-            h["#{env_name}_memcached#{counters[:memcached]}"] = host
+            h["#{env_name}_#{node["name"]}"] = host
             counters[:memcached] += 1
           end
         when "db_master"
