@@ -51,9 +51,7 @@ class CloudInfo
       
       threads = hosts.collect do |host|
         Thread.new {
-          puts "host #{host.inspect}"
           @sessions << Net::SSH.start(host, @user, {:keys => @private_key})
-          puts "host end"
           @sessions
         }
       end
@@ -63,11 +61,9 @@ class CloudInfo
     def build_server_infos
       return if @built
       execute_on_servers do |ssh|
-        puts "execute_on_servers hi #{ssh.host}"
         @servers[ssh.host] ||= {}
         dna_json = ssh.exec!("cat /etc/chef/dna.json")
         @servers[ssh.host]["dna"] = JSON.parse(dna_json)
-        puts "execute_on_servers hi2"
       end
       @built = true
     end
