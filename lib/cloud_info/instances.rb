@@ -36,9 +36,13 @@ class CloudInfo
     # only the instances for the env
     def instances
       instance_ids = ey_instances(@cloud_info.env_name)
-      group_id = aws_group_for_instance_id(instance_ids.first)
-      instances = instances_in_group(group_id)
-      instances
+      if instance_ids.empty?
+        instances = []
+      else
+        group_id = aws_group_for_instance_id(instance_ids.first)
+        instances = instances_in_group(group_id)
+        instances
+      end
     end
     
     def connect_to_servers
