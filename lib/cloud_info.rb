@@ -12,7 +12,8 @@ class CloudInfo
   end
   
   # if a cache exist it uses it instead of finding the servers
-  def hosts(use_cache = false)
+  def hosts
+    use_cache = @options[:use_cache]
     # check yaml file first
     if use_cache and File.exist?(@cache_path)
       @hosts = (CloudInfo.read_yaml(@cache_path) || {})[env_name]
